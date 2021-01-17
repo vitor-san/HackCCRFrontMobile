@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "Campanha USP do Agasalho",
+    "slug": "CampanhaUSPdoAgasalho",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./src/assets/icon.png",
+    "splash": {
+      "image":"./src/assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#003D5C"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.usp.campanhadoagasalho",
+      "buildNumber": "1.0.0"
+    },
+    "android": {
+      "package": "com.usp.campanhadoagasalho",
+      "versionCode": 1
+    },
+  }
+}
