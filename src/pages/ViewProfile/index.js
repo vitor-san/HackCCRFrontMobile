@@ -22,19 +22,12 @@ import notCarIcon from '../../assets/Icons/notCar.png';
 import styles from './styles';
 import globalStyles, { colors } from '../../globalStyles';
 
-// MODALS
-import DrawerModal from '../../modals/drawerModal';
-
 // COMPONENTES
-import ShowCrown from '../../components/showCrown';
 import ShowEditSave from '../../components/showEditSave';
 import TeamIcon from '../../components/TeamIcon';
 
 // API
 import api from '../../services/api';
-
-// UTILS
-import { copyToClipboard, sendWhatsapp } from '../../utils';
 
 export default function ViewProfile() {
   // NAVIGATION PROPS
@@ -44,8 +37,8 @@ export default function ViewProfile() {
   // STATES
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const [loggedMemberID, setLoggedMemberID] = useState('');
-  const [member, setMember] = useState({
+  const [loggedJobID, setLoggedJobID] = useState('');
+  const [job, setJob] = useState({
     wpp: '',
     team: {
       name: '',
@@ -53,37 +46,31 @@ export default function ViewProfile() {
   });
 
   // NAVEGA PARA A TELA DE EDITAR PERFIL
-  function NavigateToEditProfile(member) {
+  function NavigateToEditProfile(job) {
     setDrawerVisible(false);
-    navigation.navigate('EditProfile', { member });
-  }
-
-  // FECHA O DRAWER MODAL E MOSTRA O PASSWORD MODAL
-  function changePasswordButton() {
-    setDrawerVisible(false);
-    navigation.navigate('Trocar Senha', { memberId: loggedMemberID });
+    navigation.navigate('EditProfile', { job });
   }
 
   // RECUPERA AS INFORMAÇÕES DO MEMBRO NO BANCO
-  async function getMember(memberId) {
-    const resp = await api.get(`/members/${memberId}`, {});
-    setMember(resp.data);
+  async function getJob(jobId) {
+    const resp = await api.get(`/jobs/${jobId}`, {});
+    setJob(resp.data);
     setLoaded(true);
   }
 
   // CHAMADA API PARA BUSCAR AS INFORMACOES DO MEMBRO NO BANCO
   useEffect(() => {
-    async function getLoggedMember() {
+    async function getLoggedJob() {
       const resp = JSON.parse(await AsyncStorage.getItem('@CampanhaAuth:user'));
-      setMember(resp);
-      setLoggedMemberID(resp._id);
+      setJob(resp);
+      setLoggedJobID(resp._id);
     }
 
     // O PADRAO DA TELA É A TELA DE PERFIL DO USUARIO LOGADO
     // SE HOUVER UM ID NA ROTA, ENTAO EU PEGO OS DADOS DO MEMBRO QUE TEM ESSE ID NOVO
-    getLoggedMember();
+    getLoggedJob();
     if (route.params?.id) {
-      getMember(route.params.id);
+      getJob(route.params.id);
     } else {
       setLoaded(true);
     }
@@ -92,12 +79,6 @@ export default function ViewProfile() {
   return (
     <View style={globalStyles.container}>
       {/* MODALS */}
-      <DrawerModal
-        visible={drawerVisible}
-        close={() => setDrawerVisible(false)}
-        editProfile={() => NavigateToEditProfile(member)}
-        changePassword={changePasswordButton}
-      />
       <StatusBar
         backgroundColor={colors.primary}
         barStyle="light-content"
@@ -119,22 +100,21 @@ export default function ViewProfile() {
             <View style={styles.editButtonContainer}>
               <View style={styles.photoContainer}>
                 <View style={styles.photo}>
-                  <ShowCrown show={member.coord} />
                   <Avatar
                     containerStyle={styles.standartAvatar}
                     size="large"
                     rounded
-                    title={member.name ? member.name.slice(0, 2) : 'UN'}
+                    title={job.name ? job.name.slice(0, 2) : 'UN'}
                     onPress={() => console.log('Works!')}
                     activeOpacity={0.8}
-                    source={{ uri: member.image ? member.image.url : 'none' }}
+                    source={{ uri: job.image ? job.image.url : 'none' }}
                   />
                 </View>
               </View>
               <ShowEditSave
                 type="edit"
                 onPress={() => setDrawerVisible(true)}
-                show={member._id === loggedMemberID}
+                show={job._id === loggedJobID}
               />
             </View>
           </View>
@@ -153,8 +133,8 @@ export default function ViewProfile() {
             visible={loaded}
           >
             <View style={styles.names}>
-              <Text style={styles.realName}>{member.name}</Text>
-              <Text style={styles.nickname}>({member.realName})</Text>
+              <Text style={styles.realName}>{job.name}</Text>
+              <Text style={styles.nickname}>({job.realName})</Text>
             </View>
           </ShimmerPlaceHolder>
           <ShimmerPlaceHolder
@@ -170,26 +150,20 @@ export default function ViewProfile() {
             <View style={styles.informations}>
               <View style={styles.iconTextContainer}>
                 <Feather name="mail" color={colors.primary} size={29} />
-                <Text style={styles.textInfo}>{member.email}</Text>
-                <TouchableOpacity
-                  onPress={() => copyToClipboard(member.email)}
-                  style={styles.clipboard}
-                >
-                  <FontAwesome5 name="copy" color={colors.primary} size={22} />
-                </TouchableOpacity>
+                <Text style={styles.textInfo}>{job.email}</Text>
               </View>
               <View style={styles.iconTextContainer}>
                 <MaterialIcons name="school" color={colors.primary} size={29} />
-                <Text style={styles.textInfo}>{member.course}</Text>
+                <Text style={styles.textInfo}>{job.course}</Text>
               </View>
               <View style={styles.iconTextContainer}>
                 <FontAwesome name="whatsapp" color={colors.primary} size={34} />
                 <Text style={styles.textInfo}>
-                  ({member.wpp.slice(0, 2)}) {member.wpp.slice(2, 7)}-{''}
-                  {member.wpp.slice(7)}
+                  ({job.wpp.slice(0, 2)}) {job.wpp.slice(2, 7)}-{''}
+                  {job.wpp.slice(7)}
                 </Text>
                 <TouchableOpacity
-                  onPress={() => sendWhatsapp(member.wpp)}
+                  onPress={() => sendWhatsapp(job.wpp)}
                   style={styles.clipboard}
                 >
                   <FontAwesome5 name="link" color={colors.primary} size={18} />
@@ -210,12 +184,12 @@ export default function ViewProfile() {
             <View style={styles.carTeamContainer}>
               <Image
                 style={styles.car}
-                source={member.hasCar === 0 ? notCarIcon : carIcon}
+                source={job.hasCar === 0 ? notCarIcon : carIcon}
               />
               <TeamIcon
                 color={colors.primary}
                 size={28}
-                team={member.team.name}
+                team={job.team.name}
               />
             </View>
           </ShimmerPlaceHolder>

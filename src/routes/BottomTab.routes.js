@@ -4,10 +4,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // COMPONENTS
 import { MaterialIcons, Entypo, FontAwesome } from '@expo/vector-icons';
-import MemberList from '../pages/MemberList';
+import JobList from '../pages/JobList';
 import ViewProfile from '../pages/ViewProfile';
-import Dashboard from '../pages/Dashboard';
-import MemberListStackScreen from './MemberList.routes';
+import Trail from '../pages/Trail';
+import JobListStackScreen from './JobList.routes';
 
 // ESTILOS E ICONES
 import globalStyles from '../globalStyles';
@@ -18,8 +18,8 @@ const Tabs = createBottomTabNavigator();
 export default function BottomTab() {
   return (
     <Tabs.Navigator
-      screenOptions={{ headerShown: false }}
-      initialRouteName="Inicio"
+      screenOptions={{ headerShown: true }}
+      initialRouteName="Trilhas"
       tabBarOptions={{
         style: globalStyles.footer,
         labelStyle: globalStyles.footerText,
@@ -31,13 +31,13 @@ export default function BottomTab() {
       }}
     >
       <Tabs.Screen
-        name="Inicio"
+        name="Trilhas"
         options={{
           tabBarIcon: ({ color }) => (
             <Entypo name="home" color={color} size={28} />
           ),
         }}
-        component={Dashboard}
+        component={Trail}
       />
       <Tabs.Screen
         name="Eventos"
@@ -46,15 +46,15 @@ export default function BottomTab() {
             <FontAwesome name="calendar" color={color} size={28} />
           ),
         }}
-        component={MemberList}
+        component={JobList}
       />
       <Tabs.Screen
-        name="Membros"
+        name="Vagas"
         listeners={({ navigation }) => ({
           tabPress: () => {
-            // Força o navegador para ir para a tela de lista de membros
+            // Força o navegador para ir para a tela de lista de Vagas
             // ao invés de ir apra o topo da stack
-            navigation.navigate('Membros');
+            navigation.navigate('Vagas');
           },
         })}
         options={{
@@ -62,7 +62,7 @@ export default function BottomTab() {
             <FontAwesome name="search" color={color} size={28} />
           ),
         }}
-        component={MemberListStackScreen}
+        component={JobListStackScreen}
       />
       <Tabs.Screen
         name="Perfil"

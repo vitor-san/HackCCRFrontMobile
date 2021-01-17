@@ -18,71 +18,70 @@ import styles from './styles';
 import globalStyles, { colors } from '../../globalStyles';
 
 // COMPONENTES
-import MemberCard from '../../components/memberCard';
+import JobCard from '../../components/JobCard';
 
 // API
 import api from '../../services/api';
 
 // UTILS
-import { filterMembers } from '../../utils';
+import { filterJobs } from '../../utils';
 
-export default function MemberList() {
+export default function JobList() {
   // NAVIGATION PROPS
   const navigation = useNavigation();
 
   // STATES
-  const [loggedMemberId, setLoggedMemberID] = useState('');
   const [name, setName] = useState('');
   const [team, setTeam] = useState('all');
   const [checkCar, setCheckCar] = useState(false);
-  const [allMembers, setAllMembers] = useState([]);
-  const [filteredMembers, setFilteredMembers] = useState([]);
+  const [allJobs, setAllJobs] = useState([]);
+  const [filteredJobs, setFilteredJobs] = useState([]);
   const [loaded, setLoaded] = useState(false);
 
   // FILTRAGEM DOS MEMBROS
-  function filterMembersbyCar() {
+  function filterJobsByEnterprise() {
     setCheckCar(!checkCar);
-    const newData = filterMembers(allMembers, name, team, !checkCar);
-    setFilteredMembers(newData);
+    const newData = filterJobs(allJobs, name, team, !checkCar);
+    setFilteredJobs(newData);
   }
 
-  function filterMembersbyTeam(team) {
+  function filterJobsbyTeam(team) {
     setTeam(team);
-    const newData = filterMembers(allMembers, name, team, checkCar);
-    setFilteredMembers(newData);
+    const newData = filterJobs(allJobs, name, team, checkCar);
+    setFilteredJobs(newData);
   }
 
-  function filterMembersbyName(name) {
+  function filterJobsbyName(name) {
     setName(name);
-    const newData = filterMembers(allMembers, name, team, checkCar);
-    setFilteredMembers(newData);
+    const newData = filterJobs(allJobs, name, team, checkCar);
+    setFilteredJobs(newData);
   }
 
   // CARREGA TODOS OS MEMBROS DO BANCO
-  async function loadMembers() {
-    const resp = await api.get('/members', {});
-    setAllMembers(resp.data);
-    setFilteredMembers(resp.data);
+  async function loadJobs() {
+    const resp = await api.get('/Jobs', {});
+    setAllJobs(resp.data);
+    setFilteredJobs(resp.data);
     setLoaded(true);
   }
 
   useEffect(() => {
-    async function getLoggedMember() {
+    async function getLoggedJob() {
       const resp = JSON.parse(await AsyncStorage.getItem('@CampanhaAuth:user'));
-      setLoggedMemberID(resp._id);
+      setLoggedJobID(resp._id);
     }
-    getLoggedMember();
-    loadMembers();
+    getLoggedJob();
+    loadJobs();
   }, []);
 
   // NAVEGA PARA A TELA DE VER O PERFIL DO MEMBRO
-  function NavigateToViewProfile(member) {
+  function NavigateToViewProfile(job) {
     // SE O MEMBRO FOR O MEMBRO LOGADO ELE VAI PRA TELA DE PERFIL
     // DA BOTTOM TAB
-    if (member._id === loggedMemberId) {
+    if (job._id === loggedJobId) {
       navigation.navigate('Perfil');
     } // SENAO NAVEGA PARA A TELA DE MEMBRO DA STACK PASSANDO O ID DO MEMBRO
-    else navigation.navigate('MemberViewProfile', { id: member._id });
+    else navigation.navigate('JobViewProfile', { id: job._id });
   }
 
   return (
@@ -111,7 +110,7 @@ export default function MemberList() {
               placeholder="Nome do membro..."
               placeholderTextColor={colors.grey3}
               style={styles.inputText}
-              onChangeText={(name) => filterMembersbyName(name)}
+              onChangeText={(name) => filterJobsbyName(name)}
             />
           </View>
         </ShimmerPlaceHolder>
@@ -127,7 +126,7 @@ export default function MemberList() {
             <CheckBox
               checked={checkCar}
               center
-              onPress={filterMembersbyCar}
+              onPress={filterJobsbyCar}
               uncheckedColor={colors.primary}
               checkedColor={colors.primary}
             />
@@ -137,7 +136,7 @@ export default function MemberList() {
               <Picker
                 selectedValue={team}
                 onValueChange={(itemValue) => {
-                  filterMembersbyTeam(itemValue);
+                  filterJobsbyTeam(itemValue);
                 }}
                 style={styles.Picker}
                 mode="dropdown"
@@ -162,15 +161,15 @@ export default function MemberList() {
 
       <View style={styles.cardsContainer}>
         <FlatList
-          data={filteredMembers}
+          data={filteredJobs}
           vertical
           showsVerticalScrollIndicator={false}
-          keyExtractor={(member) => member._id}
-          renderItem={({ item: member }) => (
-            <MemberCard
-              member={member}
+          keyExtractor={(job) => job._id}
+          renderItem={({ item: job }) => (
+            <JobCard
+              job={job}
               loaded={loaded}
-              navigateFunction={() => NavigateToViewProfile(member)}
+              navigateFunction={() => NavigateToViewProfile(job)}
             />
           )}
         />

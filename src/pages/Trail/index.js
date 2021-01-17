@@ -1,11 +1,9 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StatusBar } from 'react-native';
 
-import { useAuth } from '../../contexts/auth';
-
 import { colors } from '../../globalStyles';
 
-export default function Dashboard() {
+export default function TrailPage() {
   const { Logout } = useAuth();
 
   function handleLogout() {

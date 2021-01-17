@@ -41,11 +41,6 @@ export default StyleSheet.create({
     justifyContent: 'center',
     textAlign: 'center',
   },
-  showCrown: {
-    alignSelf: 'center',
-    position: 'absolute',
-    bottom: 35,
-  },
   hideCrown: {
     alignSelf: 'center',
     position: 'absolute',

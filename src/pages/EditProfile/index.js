@@ -18,34 +18,27 @@ import styles from './styles';
 import globalStyles, { colors } from '../../globalStyles';
 
 // COMPONENTES
-import ShowCrown from '../../components/showCrown';
 import ShowEditSave from '../../components/showEditSave';
 import TeamIcon from '../../components/TeamIcon';
-import ImagePickerModal from '../../modals/imagePickerModal';
-import LoaderModal from '../../modals/loaderModal';
 
 // API
 import api from '../../services/api';
-
-// UTILS
-import { validateEmail, validateWhatsApp } from '../../utils';
 
 export default function EditProfile() {
   // NAVIGATION PROPS
   const route = useRoute();
   const navigation = useNavigation();
-  const { member } = route.params; // ID DO MEMBRO DO PERFIL
+  const { job } = route.params; // ID DO MEMBRO DO PERFIL
 
   // STATES
-  const [name, setName] = useState(member.name);
-  const [nickname, setNickName] = useState(member.realName);
-  const [email, setEmail] = useState(member.email);
-  const [course, setCourse] = useState(member.course);
-  const [wpp, setWpp] = useState(member.wpp);
-  const [hasCar, setHasCar] = useState(member.hasCar);
-  const [photo, setPhoto] = useState(member.image ? member.image : 'none');
+  const [name, setName] = useState(job.name);
+  const [nickname, setNickName] = useState(job.realName);
+  const [email, setEmail] = useState(job.email);
+  const [course, setCourse] = useState(job.course);
+  const [wpp, setWpp] = useState(job.wpp);
+  const [hasCar, setHasCar] = useState(job.hasCar);
+  const [photo, setPhoto] = useState(job.image ? job.image : 'none');
   const [deleteImage, setDeleteImage] = useState(false);
-  const [cameraModalVisible, setCameraModalVisible] = useState(false);
   const [loaderVisible, setLoaderVisible] = useState(false);
 
   // FUNCTIONS
@@ -53,9 +46,9 @@ export default function EditProfile() {
     navigation.goBack();
   }
 
-  async function saveMemberStorage() {
+  async function savejobStorage() {
     try {
-      const resp = await api.get(`/members/${member._id}`, {});
+      const resp = await api.get(`/jobs/${job._id}`, {});
       await AsyncStorage.setItem(
         '@CampanhaAuth:user',
         JSON.stringify(resp.data)
@@ -68,20 +61,14 @@ export default function EditProfile() {
 
   // MANDA AS INFORMAÇÕES PARA O BANCO
   async function saveInformations() {
-    if (validateEmail(email) === false) {
-      return;
-    }
-    if (validateWhatsApp(wpp) === false) {
-      return;
-    }
     const data = new FormData();
     data.append('name', name);
     data.append('realName', nickname);
     data.append('email', email);
     data.append('wpp', wpp);
-    data.append('team', member.team._id);
+    data.append('team', job.team._id);
     data.append('course', course);
-    data.append('coord', member.coord);
+    data.append('coord', job.coord);
     data.append('hasCar', hasCar);
 
     if (deleteImage === true) {
@@ -99,8 +86,8 @@ export default function EditProfile() {
 
     try {
       setLoaderVisible(true);
-      await api.put(`/members/${member._id}`, data);
-      await saveMemberStorage();
+      await api.put(`/jobs/${job._id}`, data);
+      await savejobStorage();
 
       // reseta a pagina de perfil
       // ainda não entendi como funciona direito
@@ -134,12 +121,10 @@ export default function EditProfile() {
   }
   function DeleteImage() {
     setDeleteImage(true);
-    setCameraModalVisible(false);
     setPhoto('none');
   }
 
   async function openGallery() {
-    setCameraModalVisible(false);
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -162,7 +147,6 @@ export default function EditProfile() {
 
   // ABRE A CAMERA DO CELULAR
   async function openCamera() {
-    setCameraModalVisible(false);
     try {
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -186,15 +170,6 @@ export default function EditProfile() {
     <View style={globalStyles.container}>
       {/* MODALS */}
       {/* IMAGE PICKER */}
-      <ImagePickerModal
-        visible={cameraModalVisible}
-        cancel={() => setCameraModalVisible(false)}
-        save={() => setCameraModalVisible(false)}
-        openCamera={openCamera}
-        openGallery={openGallery}
-        deleteImage={DeleteImage}
-      />
-      <LoaderModal visible={loaderVisible} text="Salvando as informações..." />
       <View style={styles.profileContainer}>
         {/* Parte com o botão de editar e a foto */}
 
@@ -206,30 +181,17 @@ export default function EditProfile() {
 
             <View style={styles.photoContainer}>
               <View style={styles.photo}>
-                <ShowCrown show={member.coord} />
                 <Avatar
                   containerStyle={styles.standartAvatar}
                   size="large"
                   rounded
                   activeOpacity={0.2}
-                  title={member.name ? member.name.slice(0, 2) : 'UN'}
+                  title={job.name ? job.name.slice(0, 2) : 'UN'}
                   source={{
                     // eslint-disable-next-line no-nested-ternary
                     uri: photo.url ? photo.url : photo.uri ? photo.uri : 'none',
                   }}
                 />
-              </View>
-              <View style={styles.cameraContainer}>
-                <TouchableOpacity
-                  onPress={() => setCameraModalVisible(true)}
-                  style={styles.camera}
-                >
-                  <MaterialIcons
-                    name="photo-camera"
-                    color="#003D5C"
-                    size={32}
-                  />
-                </TouchableOpacity>
               </View>
             </View>
 
@@ -309,7 +271,7 @@ export default function EditProfile() {
               />
             </TouchableOpacity>
             <TouchableOpacity style={styles.carTeamButton}>
-              <TeamIcon color="#003D5C" size={22} team={member.team.name} />
+              <TeamIcon color="#003D5C" size={22} team={job.team.name} />
             </TouchableOpacity>
           </View>
         </View>
